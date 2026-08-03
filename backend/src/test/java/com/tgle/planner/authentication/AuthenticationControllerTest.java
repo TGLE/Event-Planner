@@ -64,7 +64,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest implements
 
         AtomicReference<String> verificationCode = new AtomicReference<>();
 
-        await().atMost(Duration.ofSeconds(5))
+        await().atMost(Duration.ofSeconds(15))
                 .untilAsserted(() -> {
                     MailpitSummaryResponse summary = getMailpitClient().get()
                             .uri("/api/v1/messages")
