@@ -1,0 +1,60 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: false
+    properties:
+      hibernate:
+        type:
+          json_format_mapper: com.tgle.planner.core.config.CustomHibernateJsonFormatter
+        format_sql: true
+    database: MYSQL
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+  mail:
+    host: localhost
+    port: 1025
+    username: test-user
+    password: test-password
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+  config:
+    import: ""
+
+security:
+  jwt:
+    public-key: classpath:keys/local/public.pem
+    private-key: classpath:keys/local/private.pem
+    expiration: 15m
+  token:
+    refresh:
+      expiration: 7d
+      remember-me-expiration: 30d
+      cookie-name: refresh-token
+    otp:
+      length: 6
+      cooldowns: 1m, 3m, 5m, 15m, 30m
+      cooldown-reset-period: 1h
+      email-verification:
+        expiration: 1h
+      email-change:
+        expiration: 10m
+      password-reset:
+        expiration: 30m
+    password-reset-verified:
+      expiration: 5m
+      cookie-name: password-reset-token
+    token-cleanup:
+      cleanup-cron: 0 0 3 * * *
+
+application:
+  name: planner-test
+  backend:
+    mail:
+      sender: supportEP@gmail.com

@@ -1,0 +1,47 @@
+services:
+
+  backend:
+    profiles:
+      - app
+    build: .
+    container_name: event_planner_backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - mailpit
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      MAIL_HOST: mailpit
+      MAIL_PORT: 1025
+
+  db:
+    image: mysql:8.0
+    container_name: mysql_event_planner
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: event_planner
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_app_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: mailpit_event_planner_app
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
+volumes:
+  mysql_app_data:

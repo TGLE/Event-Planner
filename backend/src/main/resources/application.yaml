@@ -1,0 +1,62 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        type:
+          json_format_mapper: com.tgle.planner.core.config.CustomHibernateJsonFormatter
+        format_sql: true
+    database: MYSQL
+    database-platform: org.hibernate.dialect.MySQLDialect
+  mail:
+    host: localhost
+    port: 1025
+    username: username
+    password: password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  config:
+    import: optional:file:.env.local[.properties]
+
+security:
+  jwt:
+    public-key: ${JWT_PUBLIC_KEY:classpath:keys/local/public.pem}
+    private-key: ${JWT_PRIVATE_KEY:classpath:keys/local/private.pem}
+    expiration: ${JWT_EXPIRATION:15m}
+  token:
+    refresh:
+      expiration: ${REFRESH_EXPIRATION:7d}
+      remember-me-expiration: ${REMEMBER_ME_EXPIRATION:30d}
+      cookie-name: refresh-token
+    otp:
+      length: 6
+      cooldowns: ${OTP_COOLDOWNS:1m, 3m, 5m, 15m, 30m}
+      cooldown-reset-period: ${OTP_COOLDOWN_RESET_PERIOD:1h}
+      email-verification:
+        expiration: ${EMAIL_VERIFICATION_EXPIRATION:1h}
+      email-change:
+        expiration: ${EMAIL_CHANGE_EXPIRATION:10m}
+      password-reset:
+        expiration: ${PASSWORD_RESET_EXPIRATION:30m}
+    password-reset-verified:
+      expiration: ${PASSWORD_RESET_VERIFIED_EXPIRATION:5m}
+      cookie-name: password-reset-token
+    token-cleanup:
+      cleanup-cron: ${CLEANUP_CRON:0 0 3 * * *}
+
+application:
+  name: planner
+  backend:
+    mail:
+      sender: supportEP@gmail.com

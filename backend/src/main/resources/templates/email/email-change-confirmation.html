@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Change Successful</title>
+</head>
+<body style="font-family: Arial, sans-serif;">
+<h1>Email Change Successful</h1>
+
+<p>Hello, <span th:text="${full_name}"></span>!</p>
+
+<p>This is a confirmation that the email address for your account has been successfully changed.</p>
+
+<p>Your email was updated from <span th:text="${old_email}"></span> to <span th:text="${new_email}"></span>.</p>
+
+<p>If you did not make this change, please contact our support team immediately.</p>
+</body>
+</html>
