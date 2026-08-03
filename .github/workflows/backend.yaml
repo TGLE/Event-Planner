@@ -45,9 +45,6 @@ jobs:
           java-version: '24'
           distribution: 'temurin'
 
-      - name: Check Docker
-        run: docker ps
-
       - name: Generate JWT test keys
         run: |
           mkdir -p src/main/resources/keys/local
