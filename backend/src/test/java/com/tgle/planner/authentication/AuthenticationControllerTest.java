@@ -7,6 +7,7 @@ import com.tgle.planner.authentication.presentation.dto.AuthenticationResponse;
 import com.tgle.planner.authentication.presentation.dto.LoginRequest;
 import com.tgle.planner.authentication.presentation.dto.RegisterRequest;
 import com.tgle.planner.authentication.presentation.dto.VerifyOtpRequest;
+import com.tgle.planner.mailpit.MailpitIntegrationTest;
 import com.tgle.planner.mailpit.MailpitInterface;
 import com.tgle.planner.mailpit.MailpitMessageResponse;
 import com.tgle.planner.mailpit.MailpitSummaryResponse;
@@ -23,7 +24,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AuthenticationControllerTest extends BaseIntegrationTest implements MailpitInterface {
+public class AuthenticationControllerTest extends MailpitIntegrationTest {
 
     private static final String AUTH_PATH = "/api/v1/auth";
     private static final Pattern OTP_PATTERN = Pattern.compile("\\b\\d{6}\\b");
