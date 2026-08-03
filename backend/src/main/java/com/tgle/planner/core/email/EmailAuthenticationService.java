@@ -51,7 +51,7 @@ public class EmailAuthenticationService {
 
     private void sendEmail(EmailTemplate template, String email, Map<String, Object> variables) {
         RenderedEmail renderedEmail = emailTemplateBuilder.buildEmail(template, variables);
-        emailService.sendEmail(application.name(), email, renderedEmail.subject(), renderedEmail.body());
+        emailService.sendEmail(application.backend().mail().sender(), email, renderedEmail.subject(), renderedEmail.body());
     }
 
     private String maskEmail(String email) {
