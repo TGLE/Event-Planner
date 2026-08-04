@@ -64,25 +64,6 @@ public class Token {
                 .build();
     }
 
-    public static Token createRefresh(
-            Long userId,
-            TokenType type,
-            String hashedValue,
-            Instant expiration,
-            String deviceId,
-            Map<String, Object> payload
-    ) {
-        return Token.builder()
-                .tokenValue(hashedValue)
-                .expiresAt(expiration)
-                .status(TokenStatus.USED)
-                .type(type)
-                .userId(userId)
-                .deviceId(deviceId)
-                .payload(payload)
-                .build();
-    }
-
     public Token activate(Instant now) {
         if (isActive()) {
             return this;

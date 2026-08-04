@@ -17,7 +17,8 @@ public interface TokenPersistenceMapper {
     @Mapping(target = "userId", source = "user.id")
     Token toDomainEntity(TokenEntity tokenEntity);
 
-    @Mapping(target = "user.id", source = "userId")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
     void updateJpaEntity(Token token, @MappingTarget TokenEntity tokenEntity);
 
     List<TokenEntity> toJpaEntityList(List<Token> tokens);
