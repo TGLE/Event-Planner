@@ -24,9 +24,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,21 @@ public class GlobalExceptionHandler {
 
     private final Clock clock;
     private final CookieService cookieService;
+
+    @ExceptionHandler(EventNotViewableException.class)
+    public ResponseEntity<ErrorResponse> handleEventNotViewableException(EventNotViewableException ex) {
+        return buildErrorResponse(ErrorCode.RESOURCE_NOT_FOUND, ex);
+    }
+
+    @ExceptionHandler(IllegalEventStateException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalEventStateException(IllegalEventStateException ex) {
+        return buildErrorResponse(ErrorCode.DATA_CONFLICT, ex);
+    }
+
+    @ExceptionHandler(InvalidEventException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidEventException(InvalidEventException ex) {
+        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, ex);
+    }
 
     @ExceptionHandler(InvalidBearerTokenException.class)
     public ResponseEntity<ErrorResponse> handleInvalidBearerTokenException(InvalidBearerTokenException ex) {
@@ -168,18 +185,44 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ErrorCode.INVALID_ARGUMENT, ex);
     }
 
+    @ExceptionHandler(InvalidImageException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidImageException(InvalidImageException ex) {
+        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, ex);
+    }
+
+    @ExceptionHandler(ImageProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleImageProcessingException(ImageProcessingException ex) {
+        return buildErrorResponse(ErrorCode.IMAGE_PROCESSING_FAILED, ex);
+    }
+
+    @ExceptionHandler(ImageStorageException.class)
+    public ResponseEntity<ErrorResponse> handleImageException(ImageStorageException ex) {
+        return buildErrorResponse(ErrorCode.IMAGE_STORAGE_FAILED, ex);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        return buildErrorResponse(ErrorCode.CONTENT_TOO_LARGE, ex);
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         Map<String, String> errors = ex
                 .getBindingResult()
-                .getFieldErrors()
+                .getAllErrors()
                 .stream()
                 .collect(Collectors.toMap(
-                        FieldError::getField,
-                        FieldError::getDefaultMessage
+                        error -> error instanceof FieldError fieldError
+                                ? fieldError.getField()
+                                : error.getObjectName(),
+                        error -> error.getDefaultMessage() != null
+                                ? error.getDefaultMessage()
+                                : "Invalid value",
+                        (existing, replacement) -> existing + ", " + replacement,
+                        LinkedHashMap::new
                 ));
 
-        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, errors, ex);
+        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, errors, null);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -192,7 +235,7 @@ public class GlobalExceptionHandler {
                         ConstraintViolation::getMessage
                 ));
 
-        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, errors, ex);
+        return buildErrorResponse(ErrorCode.VALIDATION_FAILED, errors, null);
     }
 
     @ExceptionHandler(Exception.class)
@@ -219,7 +262,7 @@ public class GlobalExceptionHandler {
                 .statusName(status.name())
                 .errorMessage(errorCode.getMessage())
                 .validationErrors(validationErrors)
-                .details(exception.getMessage())
+                .details(exception != null ? exception.getMessage() : "Validation failed")
                 .timestamp(Instant.now(clock))
                 .build();
 

@@ -1,7 +1,7 @@
 package com.tgle.planner.user.application.service;
 
 import com.tgle.planner.user.domain.User;
-import com.tgle.planner.token.domain.UserFactory;
+import com.tgle.planner.user.domain.UserFactory;
 import com.tgle.planner.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

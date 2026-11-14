@@ -23,7 +23,7 @@ import java.util.List;
 
         List<User> toDomainEntityList(List<UserEntity> usersEntities);
 
-        TokenCooldownEmbeddable toJpaEntity(TokenCooldown tokenCooldown);
+        TokenCooldownsEmbeddable toJpaEntity(TokenCooldown tokenCooldown);
 
-        TokenCooldown toDomainEntity(TokenCooldownEmbeddable tokenCooldownEmbeddable);
+        TokenCooldown toDomainEntity(TokenCooldownsEmbeddable tokenCooldownsEmbeddable);
     }

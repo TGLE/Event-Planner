@@ -13,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode
-public class TokenCooldownEmbeddable {
+public class TokenCooldownsEmbeddable {
 
     @Column(name = "resend_count")
     private int resendCount;

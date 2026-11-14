@@ -5,7 +5,16 @@ import com.tgle.planner.event.domain.model.Event;
 import com.tgle.planner.event.domain.repository.EventRepository;
 import com.tgle.planner.event.infrastructure.persistence.entity.EventEntity;
 import com.tgle.planner.event.infrastructure.persistence.mapper.EventPersistenceMapper;
+import com.tgle.planner.event.infrastructure.persistence.projections.EventSummary;
+import com.tgle.planner.event.infrastructure.persistence.projections.PublicEventSummary;
+import com.tgle.planner.event.infrastructure.persistence.specifications.PublicEventSpecifications;
+import com.tgle.planner.event.infrastructure.persistence.specifications.OrganizerEventSpecifications;
+import com.tgle.planner.event.presentation.search.EventSearchCriteria;
+import com.tgle.planner.event.presentation.search.PublicEventSearchCriteria;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
@@ -18,6 +27,34 @@ public class EventRepositoryImpl implements EventRepository {
 
     private final EventJpaRepository eventJpaRepository;
     private final EventPersistenceMapper eventMapper;
+
+    @Override
+    public Optional<Event> findById(Long id) {
+        return eventJpaRepository.findById(id)
+                .map(eventMapper::toDomainEntity);
+    }
+
+    @Override
+    public Optional<Event> findByPublicId(Long publicId) {
+        return eventJpaRepository.findByPublicId(publicId)
+                .map(eventMapper::toDomainEntity);
+    }
+
+    @Override
+    public Page<EventSummary> findOrganizerEvents(Long organizerId, EventSearchCriteria criteria, Pageable pageable) {
+        Specification<EventEntity> specification = OrganizerEventSpecifications.filter(criteria, organizerId);
+        return eventJpaRepository.findBy(specification, query -> query
+                .as(EventSummary.class)
+                .page(pageable));
+    }
+
+    @Override
+    public Page<PublicEventSummary> findPublicEvents(PublicEventSearchCriteria criteria, Pageable pageable) {
+        Specification<EventEntity> specification = PublicEventSpecifications.filter(criteria);
+        return eventJpaRepository.findBy(specification, query -> query
+                .as(PublicEventSummary.class)
+                .page(pageable));
+    }
 
     @Override
     public Event save(Event event) {

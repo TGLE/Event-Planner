@@ -27,7 +27,7 @@ public class ProfileController {
 
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(
-            @RequestBody @Valid ChangePasswordRequest request,
+            @Valid @RequestBody ChangePasswordRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         profileService.changePassword(mapper.toCommand(request, userPrincipal.getId()));
@@ -39,7 +39,7 @@ public class ProfileController {
 
     @PatchMapping("/email")
     public ResponseEntity<Void> changeEmail(
-            @RequestBody @Valid ChangeEmailRequest request,
+            @Valid @RequestBody ChangeEmailRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         profileService.changeEmail(mapper.toCommand(request, userPrincipal.getId()));
@@ -48,7 +48,7 @@ public class ProfileController {
 
     @PostMapping("/verify-email-change")
     public ResponseEntity<Void> verifyEmailChange(
-            @RequestBody @Valid VerifyEmailChangeRequest request,
+            @Valid @RequestBody VerifyEmailChangeRequest request,
             @AuthenticationPrincipal UserPrincipal userPrincipal
     ) {
         profileService.verifyEmailChange(mapper.toCommand(request, userPrincipal.getId()));

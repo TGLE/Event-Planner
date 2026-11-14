@@ -8,6 +8,7 @@ import com.tgle.planner.authentication.presentation.dto.AuthenticationResponse;
 import com.tgle.planner.authentication.presentation.dto.LoginRequest;
 import com.tgle.planner.authentication.presentation.dto.RegisterRequest;
 import com.tgle.planner.authentication.presentation.dto.VerifyOtpRequest;
+import com.tgle.planner.core.dto.ApiResponse;
 import com.tgle.planner.mailpit.MailpitInterface;
 import com.tgle.planner.mailpit.MailpitMessageResponse;
 import com.tgle.planner.mailpit.MailpitSummaryResponse;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.client.RestTestClient;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -29,31 +31,45 @@ public class AuthenticationControllerTest extends BaseIntegrationTest implements
     private static final String AUTH_PATH = "/api/v1/auth";
     private static final Pattern OTP_PATTERN = Pattern.compile("\\b\\d{6}\\b");
 
-    @Autowired
-    private UserJpaRepository userJpaRepository;
+    private final UserJpaRepository userJpaRepository;
+    private final TokenJpaRepository tokenJpaRepository;
 
-    @Autowired
-    private TokenJpaRepository tokenJpaRepository;
+    AuthenticationControllerTest(
+            RestTestClient restTestClient,
+            UserJpaRepository userJpaRepository,
+            TokenJpaRepository tokenJpaRepository
+    ) {
+        super(restTestClient);
+        this.userJpaRepository = userJpaRepository;
+        this.tokenJpaRepository = tokenJpaRepository;
+    }
 
     @BeforeEach
-    public void cleanup() {
-        userJpaRepository.deleteAllInBatch();
+    void setUp() {
         tokenJpaRepository.deleteAllInBatch();
+        userJpaRepository.deleteAllInBatch();
     }
 
     @Test
     void shouldRegisterAndVerifyAndLoginUser() {
         String userEmail = "JohnDoe@gmail.com";
         String userPassword = "password123";
-        RegisterRequest registerRequest = new RegisterRequest(
+        RegisterRequest request = new RegisterRequest(
                 "John", "Doe", userEmail, userPassword, userPassword
         );
         restTestClient.post()
                 .uri(AUTH_PATH + "/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(registerRequest)
+                .body(request)
                 .exchange()
-                .expectStatus().isOk();
+                .expectStatus().isOk()
+                .expectBody(ApiResponse.class)
+                .value(response -> {
+                    assertThat(response).isNotNull();
+                    assertThat(response.message())
+                            .isEqualTo("Verification code has been sent. Please verify your email");
+                    assertThat(response.data()).isNull();
+                });
 
         assertThat(userJpaRepository.findByEmail(userEmail))
                 .hasValueSatisfying(user -> {
@@ -72,6 +88,7 @@ public class AuthenticationControllerTest extends BaseIntegrationTest implements
                             .retrieve()
                             .body(MailpitSummaryResponse.class);
 
+                    assertThat(summary).isNotNull();
                     assertThat(summary.messages()).isNotEmpty();
 
                     MailpitSummaryResponse.MailpitMessage verificationEmail = summary.messages().stream()
@@ -116,6 +133,9 @@ public class AuthenticationControllerTest extends BaseIntegrationTest implements
                 .expectCookie()
                 .value("refresh-token", value -> assertThat(value).isNotBlank())
                 .expectBody(AuthenticationResponse.class)
-                .value(response -> assertThat(response.accessToken()).isNotBlank());
+                .value(response -> {
+                    assertThat(response).isNotNull();
+                    assertThat(response.accessToken()).isNotBlank();
+                });
     }
 }

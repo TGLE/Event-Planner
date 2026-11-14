@@ -20,6 +20,11 @@ public class EventParticipantRepositoryImpl implements EventParticipantRepositor
     private final EventParticipantPersistenceMapper eventParticipantMapper;
 
     @Override
+    public long countByEventId(Long eventId) {
+        return eventParticipantJpaRepository.countByEventId(eventId);
+    }
+
+    @Override
     public EventParticipant save(EventParticipant eventParticipant) {
         if (eventParticipant.getId() == null) {
             EventParticipantEntity entity = eventParticipantMapper.toJpaEntity(eventParticipant);

@@ -20,6 +20,8 @@ services:
 
       MAIL_HOST: mailpit
       MAIL_PORT: 1025
+    volumes:
+      - ./data/uploads/events:/app/uploads/events
 
   db:
     image: mysql:8.0

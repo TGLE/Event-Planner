@@ -4,6 +4,7 @@ import com.tgle.planner.event.domain.enums.EventEntryType;
 import com.tgle.planner.event.domain.enums.EventState;
 import com.tgle.planner.event.domain.enums.EventStatus;
 import com.tgle.planner.event.domain.enums.EventVisibility;
+import com.tgle.planner.event.domain.model.EventDates;
 import com.tgle.planner.user.infrastructure.persistence.UserEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -18,7 +19,7 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 public class EventEntity {
 
     @Id
@@ -26,24 +27,37 @@ public class EventEntity {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
+    @Column(name = "public_id", nullable = false, updatable = false, unique = true)
+    private Long publicId;
+
     @Column(name = "title", nullable = false)
     private String title;
-
-    @Column(name = "description", columnDefinition = "TEXT")
-    private String description;
 
     @Column(name = "location")
     private String location;
 
-    @Column(name = "start_time", nullable = false)
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "image_path")
+    private String imagePath;
+
+    @Column(name = "start_time")
     private Instant startTime;
 
-    @Column(name = "end_time", nullable = false)
+    @Column(name = "end_time")
     private Instant endTime;
+
+    @Column(name = "capacity")
+    private Integer capacity;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "visibility", nullable = false)
     private EventVisibility visibility;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "entry_type", nullable = false)
+    private EventEntryType entryType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -53,25 +67,12 @@ public class EventEntity {
     @Column(name = "state", nullable = false)
     private EventState state;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "entry_type", nullable = false)
-    private EventEntryType entryType;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizer_id", nullable = false)
     private UserEntity organizer;
 
-    @Column(name = "capacity")
-    private Integer capacity;
-
-    @Column(name = "published_at")
-    private Instant publishedAt;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    @Column(name = "slug", nullable = false, unique = true)
-    private String slug;
+    @Embedded
+    private EventDatesEmbeddable dates;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

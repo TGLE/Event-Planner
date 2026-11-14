@@ -8,11 +8,11 @@ import jakarta.validation.constraints.Size;
 @PasswordMatch(password = "password", confirmPassword = "confirmPassword")
 public record RegisterRequest(
         @NotBlank(message = "First name is required")
-        @Size(min = 2, max = 64, message = "First name must be at least 2 characters long")
+        @Size(min = 2, max = 64, message = "First name must be between 2 and 64 characters long")
         String firstName,
 
         @NotBlank(message = "Last name is required")
-        @Size(min = 2, max = 64, message = "Last name must be at least 2 characters long")
+        @Size(min = 2, max = 64, message = "Last name must be between 2 and 64 characters long")
         String lastName,
 
         @NotBlank(message = "Email is required")
@@ -20,7 +20,7 @@ public record RegisterRequest(
         String email,
 
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 64, message = "Password must be at least 8 characters long")
+        @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters long")
         String password,
 
         @NotBlank(message = "Please confirm your password")

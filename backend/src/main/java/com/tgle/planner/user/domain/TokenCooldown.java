@@ -9,7 +9,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @EqualsAndHashCode
 public class TokenCooldown {
     @Builder.Default
@@ -29,10 +29,9 @@ public class TokenCooldown {
         if (isCycleExpired(resetWindow, now)) {
             return create(now);
         }
-        return TokenCooldown.builder()
+        return toBuilder()
                 .resendCount(resendCount + 1)
                 .lastResendAt(now)
-                .cycleStartedAt(cycleStartedAt)
                 .build();
     }
 

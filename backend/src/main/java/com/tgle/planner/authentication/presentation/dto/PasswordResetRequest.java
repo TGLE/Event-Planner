@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 @PasswordMatch(password = "newPassword", confirmPassword = "confirmPassword")
 public record PasswordResetRequest(
         @NotBlank(message = "Password is required")
-        @Size(min = 8, max = 64, message = "Password must be at least 8 characters long")
+        @Size(min = 8, max = 64, message = "Password must be between 8 and 64 characters long")
         String newPassword,
 
         @NotBlank(message = "Please confirm your password")

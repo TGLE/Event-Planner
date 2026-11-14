@@ -58,7 +58,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(name = "user_id")
     )
     @MapKeyColumn(name = "token_type")
-    private Map<TokenType, TokenCooldownEmbeddable> cooldowns;
+    private Map<TokenType, TokenCooldownsEmbeddable> cooldowns;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

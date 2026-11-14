@@ -4,4 +4,5 @@ import com.tgle.planner.event.infrastructure.persistence.entity.EventParticipant
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventParticipantJpaRepository extends JpaRepository<EventParticipantEntity, Long> {
+    long countByEventId(Long eventId);
 }

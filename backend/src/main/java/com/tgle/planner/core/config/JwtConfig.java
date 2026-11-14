@@ -10,16 +10,18 @@ import com.tgle.planner.core.properties.SecurityProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.*;
+
+import java.time.Clock;
 
 @Configuration
 @RequiredArgsConstructor
 public class JwtConfig {
 
     private final SecurityProperties security;
+    private final Clock clock;
 
     @Bean
     public JwtEncoder jwtEncoder() {
@@ -32,6 +34,12 @@ public class JwtConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        return NimbusJwtDecoder.withPublicKey(security.jwt().publicKey()).build();
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(security.jwt().publicKey()).build();
+        JwtIssuerValidator issuerValidator = new JwtIssuerValidator("self");
+        JwtTimestampValidator timestampValidator = new JwtTimestampValidator();
+        timestampValidator.setClock(clock);
+        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(issuerValidator, timestampValidator);
+        decoder.setJwtValidator(validator);
+        return decoder;
     }
 }

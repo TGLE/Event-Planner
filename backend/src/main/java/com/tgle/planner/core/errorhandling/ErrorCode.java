@@ -11,6 +11,11 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "SYSTEM_001", "An unexpected error occurred"),
     EMAIL_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "SYSTEM_002", "Failed to send email"),
 
+    CONTENT_TOO_LARGE(HttpStatus.CONTENT_TOO_LARGE, "UPLOAD_001", "File exceeds maximum upload size"),
+
+    IMAGE_STORAGE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "IMG_001", "Failed to store image"),
+    IMAGE_PROCESSING_FAILED(HttpStatus.UNPROCESSABLE_CONTENT, "IMG_002", "Failed to process image"),
+
     VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "VALIDATION_001", "Request validation failed"),
     INVALID_ARGUMENT(HttpStatus.BAD_REQUEST, "VALIDATION_002", "Request arguments are invalid"),
 

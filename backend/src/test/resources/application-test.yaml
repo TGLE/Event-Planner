@@ -2,3 +2,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
+
+application:
+  backend:
+    storage:
+      event-image:
+        allowed-extensions:
+          - jpg
+          - jpeg
+          - png
+          - webp
+        max-file-size: 5MB
+        max-width: 1920
+        max-height: 1080
