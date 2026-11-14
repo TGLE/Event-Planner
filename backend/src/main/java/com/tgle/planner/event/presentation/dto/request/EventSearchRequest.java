@@ -17,8 +17,9 @@ import java.time.Instant;
 @EventCapacityRange
 public record EventSearchRequest(
         @Size(max = 100)
-        @NullOrNotBlank
         String search,
+        @Size(max = 100)
+        String location,
         Instant startsAfter,
         Instant startsBefore,
         @PositiveOrZero

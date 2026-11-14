@@ -16,6 +16,7 @@ public final class PublicEventSpecifications {
                 .and(isPublished())
                 .and(isActive())
                 .and(EventSpecifications.matchesSearch(criteria.search()))
+                .and(EventSpecifications.matchesLocation(criteria.location()))
                 .and(EventSpecifications.startsAfter(criteria.startsAfter()))
                 .and(EventSpecifications.startsBefore(criteria.startsBefore()))
                 .and(EventSpecifications.minCapacity(criteria.minCapacity()))

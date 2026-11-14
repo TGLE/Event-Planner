@@ -21,9 +21,20 @@ public final class EventSpecifications {
 
             return cb.or(
                     cb.like(cb.lower(root.get("title")), pattern),
-                    cb.like(cb.lower(root.get("description")), pattern),
-                    cb.like(cb.lower(root.get("location")), pattern)
+                    cb.like(cb.lower(root.get("description")), pattern)
             );
+        };
+    }
+
+    public static Specification<EventEntity> matchesLocation(String location) {
+        return (root, query, cb) -> {
+            if (location == null || location.isBlank()) {
+                return null;
+            }
+
+            String pattern = "%" + location.trim().toLowerCase() + "%";
+
+            return cb.like(cb.lower(root.get("location")), pattern);
         };
     }
 

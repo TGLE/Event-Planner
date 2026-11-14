@@ -70,7 +70,7 @@ public class PublicEventGetControllerTest extends BaseEventControllerTest {
             eventJpaRepository.save(EventTestFactory.publishedPublicBuilder(2L, organizer)
                     .title("The Party").build());
             eventJpaRepository.save(EventTestFactory.publishedPublicBuilder(3L, organizer)
-                    .title("The Festival").build());
+                    .description("The festival closes soon!").build());
 
             restTestClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -86,6 +86,32 @@ public class PublicEventGetControllerTest extends BaseEventControllerTest {
                         assertThat(response.getContent())
                                 .extracting(PublicEventSummaryResponse::publicId)
                                 .containsExactlyInAnyOrder(1L, 3L);
+                    });
+        }
+
+        @Test
+        void shouldReturnResultWhenFilteringByLocation() {
+            eventJpaRepository.save(EventTestFactory.publishedPublicBuilder(1L, organizer)
+                    .location("Rooftop").build());
+            eventJpaRepository.save(EventTestFactory.publishedPublicBuilder(2L, organizer)
+                    .location("pArTy house").build());
+            eventJpaRepository.save(EventTestFactory.publishedPublicBuilder(3L, organizer)
+                    .location("Graveyard").build());
+
+            restTestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(EVENT_PATH)
+                            .queryParam("location", "party")
+                            .build())
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(new ParameterizedTypeReference<JsonPage<PublicEventSummaryResponse>>() {})
+                    .value(response -> {
+                        assertThat(response).isNotNull();
+                        assertThat(response.getTotalElements()).isEqualTo(1);
+                        assertThat(response.getContent())
+                                .extracting(PublicEventSummaryResponse::publicId)
+                                .containsExactly(2L);
                     });
         }
 

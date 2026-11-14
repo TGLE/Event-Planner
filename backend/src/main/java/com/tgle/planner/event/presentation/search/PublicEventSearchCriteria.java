@@ -6,6 +6,7 @@ import java.time.Instant;
 
 public record PublicEventSearchCriteria(
         String search,
+        String location,
         Instant startsAfter,
         Instant startsBefore,
         Integer minCapacity,

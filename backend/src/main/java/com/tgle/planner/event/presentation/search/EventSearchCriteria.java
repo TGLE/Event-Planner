@@ -9,6 +9,7 @@ import java.time.Instant;
 
 public record EventSearchCriteria(
         String search,
+        String location,
         Instant startsAfter,
         Instant startsBefore,
         Integer minCapacity,

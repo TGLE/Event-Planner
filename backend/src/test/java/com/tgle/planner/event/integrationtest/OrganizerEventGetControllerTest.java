@@ -116,11 +116,11 @@ public class OrganizerEventGetControllerTest extends BaseEventControllerTest {
             eventJpaRepository.save(EventTestFactory.defaultBuilder(1L, organizer)
                     .title("Spring Parade").build());
             eventJpaRepository.save(EventTestFactory.defaultBuilder(2L, organizer)
-                    .description("Summer Parade").build());
+                    .title("Summer Parade").build());
             eventJpaRepository.save(EventTestFactory.defaultBuilder(3L, organizer)
                     .description("SPRING activities and fun!").build());
             eventJpaRepository.save(EventTestFactory.defaultBuilder(4L, organizer)
-                    .location("sPrInG Street").build());
+                    .description("sPrInG vacation!").build());
 
             restTestClient.get()
                     .uri(uriBuilder -> uriBuilder
@@ -137,6 +137,33 @@ public class OrganizerEventGetControllerTest extends BaseEventControllerTest {
                         assertThat(response.getContent())
                                 .extracting(EventSummaryResponse::publicId)
                                 .containsExactlyInAnyOrder(1L, 3L, 4L);
+                    });
+        }
+
+        @Test
+        void shouldReturnResultWhenFilteringByLocation() {
+            eventJpaRepository.save(EventTestFactory.defaultBuilder(1L, organizer)
+                    .location("Summer Beach").build());
+            eventJpaRepository.save(EventTestFactory.defaultBuilder(2L, organizer)
+                    .location("Autumn Beach").build());
+            eventJpaRepository.save(EventTestFactory.defaultBuilder(3L, organizer)
+                    .location("SUMMER City").build());
+
+            restTestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(MY_EVENT_PATH)
+                            .queryParam("location", "summer")
+                            .build())
+                    .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
+                    .exchange()
+                    .expectStatus().isOk()
+                    .expectBody(new ParameterizedTypeReference<JsonPage<EventSummaryResponse>>() {})
+                    .value(response -> {
+                        assertThat(response).isNotNull();
+                        assertThat(response.getTotalElements()).isEqualTo(2);
+                        assertThat(response.getContent())
+                                .extracting(EventSummaryResponse::publicId)
+                                .containsExactlyInAnyOrder(1L, 3L);
                     });
         }
 
